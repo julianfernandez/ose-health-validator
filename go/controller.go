@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"log"
+	"strconv"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -97,12 +98,63 @@ func Validator(w http.ResponseWriter, r *http.Request) {
 			itemObject := item.(map[string]interface{})
 			metadataMap := itemObject["metadata"].(map[string]interface{})
 			specMap := itemObject["spec"].(map[string]interface{})
-			serviceArray = append(serviceArray, ServiceObject{metadataMap["name"].(string), specMap["clusterIP"].(string), ValidateService("Hola")})
+			portMap := specMap["ports"].([]interface{})
+			portObject := portMap[0].(map[string]interface{})
+			urlService := "http://" + specMap["clusterIP"].(string) + ":" + strconv.FormatFloat(portObject["port"].(float64), 'f', 0, 64) + "/health"
+			//serviceArray = append(serviceArray, ServiceObject{metadataMap["name"].(string), urlService, ValidateService(cli, urlService, token)})
+			serviceArray = append(serviceArray, ServiceObject{metadataMap["name"].(string), urlService, "ok"})
+		}
+	}
+	
+	// Set up the HTTP request to get Routes
+	urlGetRoutes := apiServer + "/oapi/v1/namespaces/" + projectName + "/routes"
+	req, err = http.NewRequest("GET", urlGetRoutes, nil)
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	if err != nil {
+		panic(err)
+	}
+	
+	resp, err = cli.Do(req)
+	
+	if err != nil {
+		log.Println("Url Get Routes=" + urlGetRoutes)
+		log.Fatal("Error getting Routes")
+	}
+	
+	defer resp.Body.Close()
+
+	routes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	routeArray := make([]ServiceObject, 0)
+	routesCustom := map[string]interface{}{}
+	json.Unmarshal(routes, &routesCustom)
+
+	if routesCustom != nil && len(routesCustom)> 0 {
+		items := routesCustom["items"].([]interface{})
+
+		for _, item := range items {
+			itemObject := item.(map[string]interface{})
+			metadataMap := itemObject["metadata"].(map[string]interface{})
+			specMap := itemObject["spec"].(map[string]interface{})
+			tls := specMap["tls"]
+			var protocol string
+			if tls != nil {
+				protocol = "https"
+			} else {
+				protocol = "http"
+			}
+			urlRoute := protocol + "://" + specMap["host"].(string) + "/health"
+			routeArray = append(routeArray, ServiceObject{metadataMap["name"].(string), urlRoute, ValidateService(cli, urlRoute, token)})
 		}
 	}
 	
 	var validatorOutput ValidatorOutput
 	validatorOutput.Services = serviceArray
+	validatorOutput.Routes = routeArray
 	
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
