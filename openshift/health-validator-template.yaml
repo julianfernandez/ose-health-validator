@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Template
+metadata:
+  annotations:
+    description: Template for health-validator
+    iconClass: icon-openjdk
+    tags: instant-app,agent
+  name: health-validator
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app_name: ${APP_NAME}
+    name: ${APP_NAME}
+  spec:
+    replicas: 1
+    selector:
+      app_name: ${APP_NAME}
+      deploymentconfig: ${APP_NAME}
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app_name: ${APP_NAME}
+          deploymentconfig: ${APP_NAME}
+      spec:
+        containers:
+        - env:
+          - name: APP_NAME
+            value: ${APP_NAME}
+          - name: PROJECT_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace                                            
+          - name: TZ
+            value: ${TZ}
+          image: juliusmore/ose-health-validator:1.0.0.RELEASE
+          imagePullPolicy: IfNotPresent
+          name: ${APP_NAME}
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              memory: 20M
+            request:
+              memory: 20M
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /opt/metadata
+            name: podinfo
+            readOnly: false
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        serviceAccount: ${SA_NAME}
+        serviceAccountName: ${SA_NAME}
+        volumes:
+        - metadata:
+            items:
+            - fieldRef:
+                fieldPath: metadata.labels
+              name: labels
+            - fieldRef:
+                fieldPath: metadata.annotations
+              name: annotations
+          name: podinfo
+  status: {}
+parameters:
+- description: Application name
+  displayName: Application Name
+  name: APP_NAME
+  required: true
+  value: health-validator
+- description: Service Account name
+  displayName: Service Account name
+  name: SA_NAME
+  required: true
+- description: TimeZone for the running containers.
+  displayName: TimeZone
+  name: TZ
+  value: Europe/Madrid
