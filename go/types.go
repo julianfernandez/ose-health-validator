@@ -15,6 +15,6 @@ type ServiceObject struct {
 }
 
 type ValidatorOutput struct {
-	Services []ServiceObject `json:"services"`
+//	Services []ServiceObject `json:"services"`
 	Routes []ServiceObject `json:"routes"`
 }
