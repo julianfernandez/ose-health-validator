@@ -13,8 +13,8 @@ func ValidateService(cli *http.Client, url string, token string) string {
 	resp, err := cli.Do(req)
 
 	if err != nil {
-		log.Println("Health URL = " + url)
-		log.Fatal("URL error")
+		log.Println("error Health URL = " + url)
+		return "ko"
 	}
 
 	defer resp.Body.Close()
