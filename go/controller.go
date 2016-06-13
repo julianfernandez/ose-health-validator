@@ -32,7 +32,8 @@ func Health(w http.ResponseWriter, r *http.Request) {
 func Validator(w http.ResponseWriter, r *http.Request) {
 
 	var token, apiServer string
-	var serviceArray []ServiceObject
+	serviceArray := make([]ServiceObject, 0)
+	routeArray := make([]ServiceObject, 0)
 	isOSE := false
 	apiServerHost := os.Getenv("KUBERNETES_SERVICE_HOST")
 	apiServerPort := os.Getenv("KUBERNETES_SERVICE_PORT")
@@ -89,7 +90,6 @@ func Validator(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	routeArray := make([]ServiceObject, 0)
 	routesCustom := map[string]interface{}{}
 	json.Unmarshal(routes, &routesCustom)
 
@@ -137,7 +137,6 @@ func Validator(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		serviceArray = make([]ServiceObject, 0)
 		servicesCustom := map[string]interface{}{}
 		json.Unmarshal(services, &servicesCustom)
 
@@ -157,9 +156,7 @@ func Validator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var validatorOutput ValidatorOutput
-	if isOSE{
-		validatorOutput.Services = serviceArray
-	}
+	validatorOutput.Services = serviceArray
 	validatorOutput.Routes = routeArray
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
