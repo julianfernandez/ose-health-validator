@@ -53,8 +53,11 @@ func ValidateReplicas(cli *http.Client, url string, token string) float64  {
 	json.Unmarshal(dcs, &dcsCustom)
 
 	if dcsCustom != nil && len(dcsCustom)> 0 {
-		specMap := dcsCustom["spec"].(map[string]interface{})
-		replicas =  specMap["replicas"].(float64)
+		spec := dcsCustom["spec"]
+		if spec != nil {
+			specMap := spec.(map[string]interface{})
+			replicas =  specMap["replicas"].(float64)
+		}
 	}
 	
 	return replicas
