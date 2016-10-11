@@ -101,7 +101,8 @@ func Validator(w http.ResponseWriter, r *http.Request) {
 				protocol = "http"
 			}
 			urlRoute := protocol + "://" + specMap["host"].(string) + "/health"
-			routeArray = append(routeArray, ServiceObject{metadataMap["name"].(string), urlRoute, ValidateService(cli, urlRoute, token)})
+			urlDC :=  apiServer + "/oapi/v1/namespaces/" + projectName + "/deploymentconfigs/" + metadataMap["name"].(string)
+			routeArray = append(routeArray, ServiceObject{metadataMap["name"].(string), urlRoute, ValidateService(cli, urlRoute, token), ValidateReplicas(cli, urlDC, token)})
 		}
 	}
 
