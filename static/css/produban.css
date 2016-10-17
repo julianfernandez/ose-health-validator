@@ -1,0 +1,13 @@
+.label.label-success.comp, .label.label-danger.comp {
+    margin: .5em .5em .5em .5em;
+    font-size: small;
+}
+
+.gap {
+	margin: 1em 1em 1em 1em;
+}
+
+.search-by-date-form{
+	margin: 1em 1em 1em 1em;
+}
+

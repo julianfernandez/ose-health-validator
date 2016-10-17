@@ -16,7 +16,7 @@ var routes = Routes{
 		"Index",
 		"GET",
 		"/",
-		Index,
+		HandlerView,
 	},
 	Route{
 		"health",

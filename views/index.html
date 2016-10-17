@@ -1,0 +1,115 @@
+{{ define "index" }}
+<html>
+
+<head>
+
+<title>Serenity Global PaaS Project Checker</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link
+ href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/slate/bootstrap.min.css"
+ rel="stylesheet"
+ integrity="sha256-purz3wKA8uL+3JryAuYkSkIZL1CHBSzJ2UwvxAOmYmM= sha512-ge9yLSNqO8D9q8z+kLuUnluXxJTVKdLCwzYBS9rZ3eDW7oJK+mLjRsQa4995TpGINC4GWYi4S2ocDssunh1q3g=="
+ crossorigin="anonymous" />
+<link rel="stylesheet"
+ href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css"></link>
+<link rel="stylesheet" href="static/css/produban.css"></link>
+
+<script type="text/javascript" src="static/js/jquery-2.2.3.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/moment.min.js"></script>
+</head>
+
+<body class="bodycss">
+ <div class="well well-sm">
+  <h1>Serenity Global PaaS Project Checker</h1>
+ </div>
+
+
+ <div class="container-fluid">
+  <div class="row">
+   <div class="col-md-12">
+    <ul class="nav nav-pills nav-justified">
+     <li class="active"><a data-toggle="tab" href="#health"><strong>Health Validator</strong></a></li>
+     <li><a data-toggle="tab" href="#ha"> <strong>HA Validator</strong></a></li>
+    </ul>
+
+    <div class="tab-content">
+    
+     <div id="health" class="tab-pane fade in active">
+      <div class="container-fluid">
+       <div class="row gap">
+        <div class="col-md-12">
+         <div class="panel panel-default">
+          <div class="panel-heading">
+           <h3 class="panel-title">
+            <strong>Routes</strong>
+           </h3>
+          </div>
+          <div class="panel-body">
+           {{range .}}
+           <div class="col-md-3">
+            {{ if eq .Health "ok" }}
+            <div  class="label label-success comp"
+             style="display: block;" >
+             <span class="fa fa-check fa-fw fa-lg"></span> <span><a href={{.Url}}>{{.Name}}</a></span>
+            </div >
+			{{end}}
+            
+			{{ if eq .Health "ko" }}
+            <div   class="label label-danger comp"
+             style="display: block;" >
+             <span class="fa fa-times fa-fw fa-lg"></span> <span>{{.Name}}</span>
+            </div>
+			{{end}}
+
+          </div>
+		  {{end}}     
+         </div>
+        </div>
+       </div>
+      </div>
+	 </div>
+	</div>
+	
+     <div id="ha" class="tab-pane fade">
+      <div class="container-fluid">
+       <div class="row gap">
+        <div class="col-md-12">
+         <div class="panel panel-default">
+          <div class="panel-heading">
+           <h3 class="panel-title">
+            <strong>Replicas</strong>
+           </h3>
+          </div>
+          <div class="panel-body">
+           {{range .}} 
+           <div class="col-md-3">
+            {{ if ge .Replicas 3.0 }}
+            <div  class="label label-success comp"
+             style="display: block;"  >
+             <span class="fa fa-check fa-fw fa-lg"></span> <span>{{.Name}} - {{.Replicas}}</span>
+            </div>
+			{{end}}
+			{{ if lt .Replicas 3.0 }} 
+            <div  class="label label-danger comp"
+             style="display: block;" >
+             <span class="fa fa-times fa-fw fa-lg"></span> <span>{{.Name}} - {{.Replicas}}</span>
+            </div>
+			{{end}}   
+          </div>
+          {{end}}
+         </div>
+        </div>
+       </div>
+      </div>
+	 </div>
+	</div>
+    </div>
+   </div>
+  </div>
+ </div>
+</body>
+
+</html>
+{{end}}
