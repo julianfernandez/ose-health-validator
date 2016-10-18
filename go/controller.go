@@ -40,7 +40,7 @@ func Validator(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlerView(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("views/index.html")
+	t, err := template.ParseFiles("static/views/index.html")
     if err != nil {
         log.Print("template parsing error: ", err)
     }
