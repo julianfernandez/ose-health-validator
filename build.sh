@@ -7,7 +7,7 @@ if [ "$#" -gt 1 ]; then
     PROXY="--build-arg https_proxy=$2"
 fi
 
-CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./image/health-validator ./go/*.go 
+CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./image/health-validator .
 
 if [ $? = 0 ]
 then
