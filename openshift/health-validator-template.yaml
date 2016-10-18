@@ -74,7 +74,7 @@ objects:
                 fieldPath: metadata.namespace                                            
           - name: TZ
             value: ${TZ}
-          image: juliusmore/ose-health-validator:1.1.0.RELEASE
+          image: juliusmore/ose-health-validator:1.1.1.RELEASE
           imagePullPolicy: IfNotPresent
           name: ${APP_NAME}
           ports:
