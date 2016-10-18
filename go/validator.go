@@ -11,9 +11,8 @@ import (
 
 func ValidateService(cli *http.Client, url string, token string) string {
 	
-	// Set up the HTTP request to validate service/routes
+	// Set up the HTTP request to validate health endpoints
 	req, err := http.NewRequest("GET", url, nil)
-	//req.Header.Add("Authorization", "Bearer "+token)
 	resp, err := cli.Do(req)
 
 	if err != nil {
@@ -88,9 +87,6 @@ func ProjectChecker() []ServiceObject  {
 		token = string(tokenBytes[:])
 		//isOSE = true
 	}
-	apiServer = "https://api.boaw.paas.gsnetcloud.corp:8443"
-	projectName = "globalpaas-dev"
-	token = "snjiYBqmIo6l2RmkiNTeovFmbwcgxSLu7SP78-oQ2f4"
 
 	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
